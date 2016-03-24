@@ -14,3 +14,7 @@ pd.set_option('max_columns',200)
 data[:10]
 for i in data.select_dtypes(include=['object'])[:0]:
     data[i] = data[i].astype('category')
+
+for i in data.select_dtypes(exclude=['category'])[:0]:
+    data[i] = data[i].fillna(data[i].median())
+
