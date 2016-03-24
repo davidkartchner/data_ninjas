@@ -7,7 +7,7 @@ def remove_nans(arr):
  arr[nan_mask] = med
 
 def cleanup_data():
-
+ 
 #rf = RandomForestClassifier(n_estimators = 100)
 #rf.fit(train, target)
 
