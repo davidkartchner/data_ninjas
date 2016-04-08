@@ -6,8 +6,8 @@ from sklearn.feature_extraction import DictVectorizer
 from matplotlib import pyplot as plt
 from sys import argv, exit
 
-if len(argv) < 4:
-    print "usage incsv outarchive test|train"
+if len(argv) < 5:
+    print "usage traincsv testcsv trainarchive testarchive"
     exit()
 
 def read_clean_csv(filename):
@@ -25,32 +25,88 @@ def read_clean_csv(filename):
          dummies.rename(columns=lambda x: i+"_"+x, inplace=True)
          del data[i]
          other_frames.append(dummies)
-#         print pd.concat([data, dummies], axis=1)
      else:
         data[i] = data[i].apply(lambda x: class_to_ind[x]).astype(np.float64)
-#         print data.concat(pd.get_dummies(data[i]))
     else:
      data[i] = data[i].fillna(data[i].median())
  res = pd.concat(other_frames, axis=1)
  return res
 
-def train_model(data):
- mat = data.as_matrix()
- nsamples = mat.shape[0]/2
- rf = RandomForestClassifier(n_estimators=1000, n_jobs=4)
- rf.fit(mat[:nsamples,2:], mat[:nsamples,1])
- print "Score on test part of training data",rf.score(mat[nsamples:,2:], mat[nsamples:,1])
- return rf
+# def analyze_dummies(df):
+#     dcols, ddict = [], {}
+#     for col in df.columns:
+#         if df[col].dtype == "object":
+#             df[col] = df[col].fillna("NA")
+#             vc = df[col].value_counts()
+#             if len(vc) < 200:
+#                 dcols.append(col)
+#                 ddict[col] = vc.keys()
+#                 cols = pd.get_dummies(df[col]).columns
+#     return dcols, ddict
 
-infile = argv[1]
-outfile = argv[2]
+def parse_train(filename):
+ data = pd.read_csv(filename)
+ pd.set_option('expand_frame_repr', True)
+ other_frames = [data]
+ dummy_dict = {}
+ for i in data.columns:
+    if data[i].dtype == "object":
+         data[i] = data[i].fillna("NA")
+         vc = data[i].value_counts()
+         class_to_ind = {k: i for i,k in enumerate(vc.keys())}
+         if len(vc) < 200:
+             dummies = pd.get_dummies(data[i])
+             dummy_dict[i] = dummies.columns
+             dummies.rename(columns=lambda x: i+"_"+x, inplace=True)
+             other_frames.append(dummies)
 
-d = read_clean_csv(infile).as_matrix()
-if argv[3] == "test":
-    np.savez(outfile, features = d[:,1:], ids=d[:,0])
-else:
+         del data[i]
+#        data[i] = data[i].apply(lambda x: class_to_ind[x]).astype(np.float64)
+    else:
+     data[i] = data[i].fillna(data[i].median())
+ res = pd.concat(other_frames, axis=1)
+ return res, dummy_dict
+
+def parse_test(filename, dummy_dict):
+    data = pd.read_csv(filename)
+    pd.set_option('expand_frame_repr', True)
+    pd.set_option('max_columns',200)
+    other_frames = [data]
+    for i in data.columns:
+        if data[i].dtype == "object":
+            dummies = pd.DataFrame()
+            if i in dummy_dict:
+                data[i] = data[i].fillna("NA")
+                dummies = pd.DataFrame()
+                cols = dummy_dict[i]
+                for col in cols:
+                    dummies[col] = (data[i] == col)
+                    dummies.rename(columns=lambda x: i+"_"+x, inplace=True)
+                other_frames.append(dummies)
+
+            del data[i]
+        else:
+         data[i] = data[i].fillna(data[i].median())
+
+    res = pd.concat(other_frames, axis=1)
+    return res
+
+def save_arch(mat, filename, type="train"):
+ if type == "test":
+    np.savez(filename, features = mat[:,1:], ids=mat[:,0])
+ else:
     print "assuming train data"
-    np.savez(outfile, features=d[:,2:], labels=d[:,1])
+    np.savez(filename, features=mat[:,2:], labels=mat[:,1])
+
+intrain, intest, outtrain, outtest = argv[1:5]
+
+train_data, dummy_dict = parse_train(intrain)
+print dummy_dict
+test_data = parse_test(intest, dummy_dict)
+print train_data.shape, test_data.shape
+save_arch(test_data.as_matrix(), outtest, type="test")
+save_arch(train_data.as_matrix(), outtrain, type="train")
+
 
 #td = d.as_matrix()
 #np.savez("train1.npz", features = td[:,2:], labels=td[:,1])
