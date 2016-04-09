@@ -28,7 +28,7 @@ def read_clean_csv(filename):
      else:
         data[i] = data[i].apply(lambda x: class_to_ind[x]).astype(np.float64)
     else:
-     data[i] = data[i].fillna(data[i].median())
+     data[i] = data[i].fillna(-999)
  res = pd.concat(other_frames, axis=1)
  return res
 
@@ -63,7 +63,7 @@ def parse_train(filename):
          del data[i]
 #        data[i] = data[i].apply(lambda x: class_to_ind[x]).astype(np.float64)
     else:
-     data[i] = data[i].fillna(data[i].median())
+     data[i] = data[i].fillna(-999)
  res = pd.concat(other_frames, axis=1)
  return res, dummy_dict
 
@@ -86,7 +86,7 @@ def parse_test(filename, dummy_dict):
 
             del data[i]
         else:
-         data[i] = data[i].fillna(data[i].median())
+         data[i] = data[i].fillna(-999)
 
     res = pd.concat(other_frames, axis=1)
     return res

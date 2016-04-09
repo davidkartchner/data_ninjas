@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 from sklearn import preprocessing
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, ExtraTreesClassifier
 from sklearn.feature_extraction import DictVectorizer
 from sklearn.metrics import log_loss
 from sklearn.cross_validation import cross_val_score
@@ -13,7 +13,7 @@ if len(argv) < 4:
     exit()
 
 def train_model(features, labels):
- rf = RandomForestClassifier(n_estimators=100, n_jobs=1, max_depth = 7)
+ rf = RandomForestClassifier(n_estimators=500, criterion= "entropy",n_jobs=1, max_depth = 35, min_samples_split=4, min_samples_leaf = 2)
 # rf.fit(mat[:nsamples,2:], mat[:nsamples,1])
  rf.fit(features, labels)
  return rf
