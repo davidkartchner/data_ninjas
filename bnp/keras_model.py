@@ -33,12 +33,12 @@ res = np.zeros((len(ids),2))
 
 num_neurons = 30
 model = Sequential()
-model.add(Dense(num_neurons, input_dim = train_features.shape[1], W_regularizer = l2(.1), activity_regularizer = activity_l2(.1)))
+model.add(Dense(num_neurons, input_dim = train_features.shape[1], W_regularizer = l2(.01), activity_regularizer = activity_l2(.01)))
 model.add(Activation('sigmoid'))
 
 for i in xrange(3):
- model.add(Dense(num_neurons, input_dim = num_neurons, W_regularizer = l2(.1), activity_regularizer = activity_l2(.1)))
- model.add(Dropout(.5))
+ model.add(Dense(num_neurons, input_dim = num_neurons, W_regularizer = l2(.01), activity_regularizer = activity_l2(.01)))
+ # model.add(Dropout(.5))
  model.add(Activation('sigmoid'))
 model.add(Dense(1))
 model.add(Activation('sigmoid'))

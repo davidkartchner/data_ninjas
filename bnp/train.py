@@ -64,6 +64,7 @@ def parse_train(filename):
 #        data[i] = data[i].apply(lambda x: class_to_ind[x]).astype(np.float64)
     else:
      data[i] = data[i].fillna(-999)
+#     data[i+"_inv"] = invert(data[i])
  res = pd.concat(other_frames, axis=1)
  return res, dummy_dict
 

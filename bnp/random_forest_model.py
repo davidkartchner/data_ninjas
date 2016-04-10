@@ -42,5 +42,5 @@ res = np.zeros((len(ids),2))
 res[:,1] = model.predict_proba(test_features)[:,1]
 res[:,0] = ids #ids
 np.savetxt(outfile, res, fmt = ["%d","%f"] ,header = "ID,PredictedProb",comments = "", delimiter=",")
-print "validating"
-validate_model(model, train_features, train_labels)
+#print "validating"
+#validate_model(model, train_features, train_labels)
