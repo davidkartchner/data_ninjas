@@ -7,6 +7,7 @@ from sklearn.metrics import log_loss
 from sklearn.cross_validation import cross_val_score, StratifiedKFold
 from matplotlib import pyplot as plt
 from sys import argv, exit
+from utils import *
 
 if len(argv) < 4:
     print "Usage: training file test file output file"
