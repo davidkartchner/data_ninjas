@@ -7,14 +7,15 @@ train_features, train_labels, test_features, ids, outfile = read_data()
 
 if len(argv) < 5:
  #there are no extra features:
- print "usage trainnpz testnpz extras subcsv"
+ print "usage trainnpz testnpz extras"
+ exit()
 
- 
+
 n_extras = len(argv) - 4
 
 extra_train = [train_features]
 extra_test = [test_features]
-for featurefile in argv[3:-1]:
+for featurefile in argv[3:]:
  arch = np.load(featurefile)
  extra_train.append(arch['train'].reshape((len(train_features),1)))
  extra_test.append(arch['test'].reshape((len(test_features),1)))
