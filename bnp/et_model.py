@@ -6,8 +6,8 @@ from sklearn.cross_validation import cross_val_score, StratifiedKFold
 
 train_features, train_labels, test_features, ids, outfile = read_data()
 
-extc = ExtraTreesClassifier(n_estimators=1000,max_features= 50,criterion= 'entropy',min_samples_split= 4,
- max_depth= 35, min_samples_leaf= 2, n_jobs = -1)      
+extc = ExtraTreesClassifier(n_estimators=1200,max_features= 50,criterion= 'entropy',min_samples_split= 4,
+ max_depth= 35, min_samples_leaf= 2, n_jobs = -1)
 
 num_reps = 5
 tot = np.zeros(len(test_features))

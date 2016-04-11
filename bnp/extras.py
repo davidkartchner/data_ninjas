@@ -21,10 +21,14 @@ for featurefile in argv[3:-1]:
 
 trainf = np.hstack(extra_train)
 testf = np.hstack(extra_test)
-print trainf.shape, testf.shape
-extc = ExtraTreesClassifier(n_estimators=1000,max_features= 50,criterion= 'entropy',min_samples_split= 4,
- max_depth= 35, min_samples_leaf= 2, n_jobs = -1)
 
-extc.fit(trainf, train_labels)
-probs = extc.predict_proba(testf)[:,1]
-save_submission(outfile, ids=ids, probs = probs)
+np.savez("train_bag", features=trainf, labels = train_labels)
+np.savez("test_bag", features = testf, ids=ids)
+
+print trainf.shape, testf.shape
+#extc = ExtraTreesClassifier(n_estimators=1000,max_features= 50,criterion= 'entropy',min_samples_split= 4,
+ #max_depth= 35, min_samples_leaf= 2, n_jobs = -1)
+
+#extc.fit(trainf, train_labels)
+#probs = extc.predict_proba(testf)[:,1]
+#save_submission(outfile, ids=ids, probs = probs)
