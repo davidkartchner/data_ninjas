@@ -44,6 +44,17 @@ def read_clean_csv(filename):
 #                 cols = pd.get_dummies(df[col]).columns
 #     return dcols, ddict
 
+def find_denominator(df, col):
+    """
+    Function that trying to find an approximate denominator used for scaling.
+    So we can undo the feature scaling.
+    """
+    vals = df[col].dropna().sort_values().round(8)
+    vals = pd.rolling_apply(vals, 2, lambda x: x[1] - x[0])
+    vals = vals[vals > 0.000001]
+    return vals.value_counts().idxmax() 
+
+
 def parse_train(filename):
  data = pd.read_csv(filename)
  pd.set_option('expand_frame_repr', True)
@@ -60,9 +71,11 @@ def parse_train(filename):
              dummies.rename(columns=lambda x: i+"_"+x, inplace=True)
              other_frames.append(dummies)
 
-         del data[i]
+             del data[i]
+         data[i] = pd.factor(data[i])
 #        data[i] = data[i].apply(lambda x: class_to_ind[x]).astype(np.float64)
     else:
+    
      data[i] = data[i].fillna(-999)
 #     data[i+"_inv"] = invert(data[i])
  res = pd.concat(other_frames, axis=1)
@@ -85,12 +98,31 @@ def parse_test(filename, dummy_dict):
                     dummies.rename(columns=lambda x: i+"_"+x, inplace=True)
                 other_frames.append(dummies)
 
-            del data[i]
+                del data[i]
+            data[i] = pd.factor(data[i])
+
         else:
          data[i] = data[i].fillna(-999)
 
     res = pd.concat(other_frames, axis=1)
     return res
+
+def find_denominator(df, col):
+    """
+    Function that trying to find an approximate denominator used for scaling.
+    So we can undo the feature scaling.
+    """
+    vals = df[col].dropna().sort_values().round(8)
+    vals = pd.rolling_apply(vals, 2, lambda x: x[1] - x[0])
+    vals = vals[vals > 0.000001]
+    return vals.value_counts().idxmax() 
+
+
+def parse_data(intrain, intest):
+  train, test = pd.read_csv(intrain), pd.read_csv(outtrain)
+  for col in test.columns:
+    if train[col.dtype] == "object":
+        train[col]
 
 def save_arch(mat, filename, type="train"):
  if type == "test":
@@ -101,9 +133,8 @@ def save_arch(mat, filename, type="train"):
 
 intrain, intest, outtrain, outtest = argv[1:5]
 
-train_data, dummy_dict = parse_train(intrain)
-print dummy_dict
-test_data = parse_test(intest, dummy_dict)
+train_data, test_data = parse_data(intrain, intest)
+
 print train_data.shape, test_data.shape
 save_arch(test_data.as_matrix(), outtest, type="test")
 save_arch(train_data.as_matrix(), outtrain, type="train")
