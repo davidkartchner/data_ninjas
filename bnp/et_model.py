@@ -19,3 +19,4 @@ tot/=num_reps
 save_submission(outfile, ids=ids, probs=tot)
 print "saved model, validating now"
 #print cross_val_score(model, train_features, train_labels, scoring= "log_loss")
+
