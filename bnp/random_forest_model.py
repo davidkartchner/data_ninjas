@@ -12,13 +12,18 @@ if len(argv) < 4:
     print "Usage: training file test file output file"
     exit()
 
+def build_model():
+ return RandomForestClassifier(n_estimators=1000, criterion= "entropy",n_jobs=1, max_depth = 50, min_samples_split=4, min_samples_leaf = 2)
+
 def train_model(features, labels):
- rf = RandomForestClassifier(n_estimators=1000, criterion= "entropy",n_jobs=1, max_depth = 50, min_samples_split=4, min_samples_leaf = 2)
+ rf = build_model()
+# rf = RandomForestClassifier(n_estimators=1000, criterion= "entropy",n_jobs=1, max_depth = 50, min_samples_split=4, min_samples_leaf = 2)
 # rf.fit(mat[:nsamples,2:], mat[:nsamples,1])
  rf.fit(features, labels)
  return rf
 
-def  validate_model(model, features, labels):
+def  validate_model(features, labels):
+ model = build_model()
  print cross_val_score(model, features, labels, scoring="log_loss")
 
 def cross_val_model(features, labels, test_features, n_fold=5):
@@ -48,7 +53,7 @@ ids = test_arch['ids']
 validate_model(train_features, train_labels)
 #res = np.zeros((len(ids),2))
 #print model.predict_proba(test_features)
-res[:,1] = cross_val_model(model, train_features, train_labels, test_features)
+res[:,1] = cross_val_model(train_features, train_labels, test_features)
 res[:,0] = ids #ids
 np.savetxt(outfile, res, fmt = ["%d","%f"] ,header = "ID,PredictedProb",comments = "", delimiter=",")
 #print "validating"
