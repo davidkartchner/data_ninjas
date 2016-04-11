@@ -12,4 +12,4 @@ extc = ExtraTreesClassifier(n_estimators=1000,max_features= 50,criterion= 'entro
 probs = cross_val_model(extc, train_features, train_labels, test_features)
 save_submission(outfile, ids=ids, probs=probs)
 print "saved model, validating now"
-print cross_val_score(model, train_features, train_labels, scoring= "log_loss")
+print cross_val_score(extc, train_features, train_labels, scoring= "log_loss")

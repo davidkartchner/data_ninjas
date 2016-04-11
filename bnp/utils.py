@@ -34,7 +34,6 @@ def cross_val_model(model, train_features, labels, test_features, nfolds = 5):
         i+=1
         model.fit(train_features[train_mask], labels[train_mask])
         probs += model.predict_proba(test_features)[:,1]
-        print log_loss(model)
         print "Finished cross val fold %d with val error %f" % (i, log_loss(labels[test_mask], model.predict_proba(train_features[test_mask])[:,1] ))
     probs /= nfolds
     return probs
