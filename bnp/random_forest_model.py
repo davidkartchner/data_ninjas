@@ -13,7 +13,7 @@ if len(argv) < 4:
     exit()
 
 def build_model():
- return RandomForestClassifier(n_estimators=1000, criterion= "entropy",n_jobs=1, max_depth = 50, min_samples_split=4, min_samples_leaf = 2)
+ return RandomForestClassifier(n_estimators=1000, criterion= "entropy",n_jobs=-1, max_depth = 35, min_samples_split=4, min_samples_leaf = 2)
 
 def train_model(features, labels):
  rf = build_model()
@@ -27,11 +27,14 @@ def  validate_model(features, labels):
  print cross_val_score(model, features, labels, scoring="log_loss")
 
 def cross_val_model(features, labels, test_features, n_fold=5):
-    skf = StratifiedKFold(labels, n_fold=n_fold)
-    probs = np.zeros(len(labels))
+    skf = StratifiedKFold(labels, n_folds=n_fold)
+    probs = np.zeros(len(test_features))
+    i=0
     for train_mask, test_mask in skf:
         model = train_model(features[train_mask], labels[train_mask])
-        probs += model.predict_proba(test_features)
+        probs += model.predict_proba(test_features)[:,1]
+        i+=1
+        print i
     probs /= n_fold
     return probs
 
@@ -50,7 +53,7 @@ ids = test_arch['ids']
 #print "loaded data"
 #model = train_model(train_features, train_labels)
 #print "Trained"
-validate_model(train_features, train_labels)
+#validate_model(train_features, train_labels)
 res = np.zeros((len(ids),2))
 #print model.predict_proba(test_features)
 res[:,1] = cross_val_model(train_features, train_labels, test_features)
