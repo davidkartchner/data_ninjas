@@ -1,6 +1,9 @@
 from sys import argv, exit
 import numpy as np
 import pandas as pd
+from time import time
+from sklearn.metrics import log_loss
+from sklearn.cross_validation import StratifiedKFold
 
 def read_data():
     if len(argv) < 4:
@@ -21,3 +24,18 @@ def read_data():
 
 def save_submission(filename, ids=None, probs=None):
     pd.DataFrame({"ID":ids, "PredictedProb":probs}).to_csv(filename, index=False)
+    
+    
+def cross_val_model(model, train_features, labels, test_features, nfolds = 5):
+    skf = StratifiedKFold(labels, n_folds=nfolds, random_state=int(time()))
+    probs = np.zeros(len(test_features))
+    i=0
+    for train_mask, test_mask in skf:
+        i+=1
+        model.fit(train_features[train_mask], labels[train_mask])
+        probs += model.predict_proba(test_features)[:,1]
+        print log_loss(model)
+        print "Finished cross val fold %d with val error %f" % (i, log_loss(labels[test_mask], model.predict_proba(train_features[test_mask])[:,1] ))
+    probs /= nfolds
+    return probs
+
