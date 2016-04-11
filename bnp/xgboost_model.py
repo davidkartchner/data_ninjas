@@ -20,13 +20,13 @@ def xgb_params():
     params['silent'] = 1
     params["eval_metric"] = 'logloss'
 #    params['alpha'] = 10
-    params['max_depth'] = np.random.randint(6,9)
-    params['lambda'] = np.random.randint(1,20)
+    params['max_depth'] = 5
+    params['lambda'] = 2
     params['colsample_bytree'] = .3
     params['subsample'] = 1.
     return params
 #    params[]
-num_rounds = 50
+num_rounds = 100
 def train_model(features, labels, validation=None):
  xgmat = xgb.DMatrix(features, label=labels)
  #create params
@@ -81,7 +81,8 @@ def train_and_save(outfile):
  print "Trained"
  save(outfile, model.predict(xgbtest))
 
-for i in xrange(50):
-  train_and_save_folds(outfile+"_"+str(i)+".csv", random_state = i)
-#print "validating"
-#validate_model(train_features, train_labels)
+#for i in xrange(50):
+ # train_and_save_folds(outfile+"_"+str(i)+".csv", random_state = i)
+print "validating"
+validate_model(train_features, train_labels)
+
