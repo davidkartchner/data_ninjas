@@ -51,7 +51,7 @@ ids = test_arch['ids']
 #model = train_model(train_features, train_labels)
 #print "Trained"
 validate_model(train_features, train_labels)
-#res = np.zeros((len(ids),2))
+res = np.zeros((len(ids),2))
 #print model.predict_proba(test_features)
 res[:,1] = cross_val_model(train_features, train_labels, test_features)
 res[:,0] = ids #ids
