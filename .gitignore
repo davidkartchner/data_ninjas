@@ -1,5 +1,5 @@
 #Ignore csv, zip, and tar files
-**/.csv
-**/.zip
-**/.tar
-**/.tar.gz
+*.csv
+*.zip
+*.tar
+*.tar.gz
